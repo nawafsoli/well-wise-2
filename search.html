@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Search</title>
+    <style>
+        /* Basic styling for the body */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom right, #e0f7fa, #fce4ec);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        /* Styling for the main heading */
+        h1 {
+            font-size: 2.5em;
+            color: #0097A7;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        /* Styling for the filter section */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 80%;
+        }
+
+        /* Styling for the filter labels */
+        .filters label {
+            font-size: 1em;
+            color: #0097A7;
+            margin-bottom: 5px;
+        }
+
+        /* Styling for input and select fields */
+        .filters input,
+        .filters select {
+            padding: 10px;
+            font-size: 1em;
+            width: 150px;
+            border: 2px solid #00ACC1;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        /* Focused effect for inputs and selects */
+        .filters input:focus,
+        .filters select:focus {
+            border-color: #006F7A;
+        }
+
+        /* Styling for the container where food cards will be displayed */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 0 10%;
+            padding-bottom: 40px;
+        }
+
+        /* Styling for each food card */
+        .card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 220px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Hover effect for food cards */
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        /* Styling for the food card title */
+        .card h3 {
+            color: #00ACC1;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        /* Styling for the food card description */
+        .card p {
+            font-size: 1em;
+            color: #555;
+        }
+
+        /* Styling for the pagination buttons */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        .pagination button {
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #00ACC1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        /* Hover effect for pagination buttons */
+        .pagination button:hover {
+            background-color: #006F7A;
+        }
+
+        /* Disabled button styling */
+        .pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Food Database</h1>
+
+<!-- Filters Section -->
+<div class="filters">
+    <!-- Filter for Calories -->
+    <div>
+        <label for="calories-search">Search Calories:</label>
+        <input type="number" id="calories-search" placeholder="e.g. 500">
+    </div>
+    <!-- Filter for Carbs -->
+    <div>
+        <label for="carbs-search">Search Carbs:</label>
+        <input type="number" id="carbs-search" placeholder="e.g. 30">
+    </div>
+    <!-- Filter for Protein -->
+    <div>
+        <label for="protein-search">Search Protein:</label>
+        <input type="number" id="protein-search" placeholder="e.g. 20">
+    </div>
+    <!-- Filter for Fat -->
+    <div>
+        <label for="fat-search">Search Fat:</label>
+        <input type="number" id="fat-search" placeholder="e.g. 15">
+    </div>
+    <!-- Sort By Dropdown -->
+    <div>
+        <label for="sort-by">Sort by:</label>
+        <select id="sort-by">
+            <option value="calories">Calories</option>
+            <option value="carbs">Carbs</option>
+            <option value="protein">Protein</option>
+            <option value="fat">Fat</option>
+        </select>
+    </div>
+</div>
+
+<!-- Food List Section -->
+<div class="container" id="food-list">
+    <!-- Cards will be inserted here dynamically -->
+</div>
+
+<!-- Pagination Section -->
+<div class="pagination">
+    <!-- Previous Button -->
+    <button id="prev-btn" onclick="changePage(-1)" disabled>Previous</button>
+    <!-- Next Button -->
+    <button id="next-btn" onclick="changePage(1)">Next</button>
+</div>
+
+<script>
+    // Example food database with 150 meals made by asking chatGPT
+    const foodDatabase = [
+    { name: "Greek Salad", calories: 150, carbs: 10, protein: 5, fat: 12 },
+    { name: "Chicken Gyro", calories: 600, carbs: 50, protein: 40, fat: 20 },
+    { name: "Tzatziki", calories: 120, carbs: 5, protein: 3, fat: 9 },
+    { name: "Spanakopita", calories: 300, carbs: 25, protein: 7, fat: 18 },
+    { name: "Moussaka", calories: 500, carbs: 40, protein: 30, fat: 25 },
+    { name: "Pasta Carbonara", calories: 650, carbs: 80, protein: 25, fat: 30 },
+    { name: "Risotto", calories: 450, carbs: 55, protein: 15, fat: 20 },
+    { name: "Margherita Pizza", calories: 700, carbs: 80, protein: 20, fat: 35 },
+    { name: "Lasagna", calories: 800, carbs: 70, protein: 35, fat: 40 },
+    { name: "Bruschetta", calories: 200, carbs: 30, protein: 5, fat: 8 },
+    { name: "Feta Cheese", calories: 264, carbs: 4, protein: 14, fat: 21 },
+    { name: "Baklava", calories: 430, carbs: 54, protein: 6, fat: 21 },
+    { name: "Kebab", calories: 250, carbs: 6, protein: 20, fat: 17 },
+    { name: "Dolma", calories: 220, carbs: 30, protein: 4, fat: 9 },
+    { name: "Falafel", calories: 330, carbs: 31, protein: 13, fat: 18 },
+    { name: "Hummus", calories: 170, carbs: 15, protein: 7, fat: 8 },
+    { name: "Pita Bread", calories: 275, carbs: 55, protein: 9, fat: 1 },
+    { name: "Souvlaki", calories: 400, carbs: 10, protein: 35, fat: 20 },
+    { name: "Tsoureki", calories: 325, carbs: 60, protein: 8, fat: 6 },
+    { name: "Fassolada", calories: 365, carbs: 60, protein: 12, fat: 8 },
+    { name: "Stifado", calories: 500, carbs: 40, protein: 45, fat: 15 },
+    { name: "Chicken Shawarma", calories: 500, carbs: 40, protein: 30, fat: 25 },
+    { name: "Beef Steak", calories: 700, carbs: 0, protein: 60, fat: 50 },
+    { name: "Chicken Biryani", calories: 700, carbs: 85, protein: 35, fat: 20 },
+    { name: "Vegetable Soup", calories: 150, carbs: 30, protein: 5, fat: 3 },
+    { name: "Cheese Burger", calories: 500, carbs: 40, protein: 25, fat: 30 },
+    { name: "Fish Tacos", calories: 400, carbs: 35, protein: 25, fat: 20 },
+    { name: "Veggie Wrap", calories: 300, carbs: 45, protein: 8, fat: 10 },
+    { name: "Grilled Salmon", calories: 350, carbs: 0, protein: 40, fat: 20 },
+    { name: "Caesar Salad", calories: 350, carbs: 15, protein: 10, fat: 25 },
+    { name: "Quinoa Salad", calories: 250, carbs: 45, protein: 8, fat: 5 },
+    { name: "Peking Duck", calories: 600, carbs: 15, protein: 40, fat: 45 },
+    { name: "Mushroom Risotto", calories: 450, carbs: 60, protein: 10, fat: 12 },
+    { name: "Chili Con Carne", calories: 550, carbs: 50, protein: 35, fat: 25 },
+    { name: "Vegan Burger", calories: 400, carbs: 40, protein: 20, fat: 15 },
+    { name: "Steak Frites", calories: 800, carbs: 50, protein: 40, fat: 35 },
+    { name: "Chicken Parmesan", calories: 650, carbs: 60, protein: 45, fat: 25 },
+    { name: "Eggplant Parmesan", calories: 450, carbs: 60, protein: 20, fat: 15 },
+    { name: "Pad Thai", calories: 500, carbs: 60, protein: 25, fat: 15 },
+    { name: "Pork Schnitzel", calories: 700, carbs: 30, protein: 45, fat: 35 },
+    { name: "Shrimp Scampi", calories: 400, carbs: 30, protein: 30, fat: 18 },
+    { name: "BBQ Ribs", calories: 800, carbs: 50, protein: 60, fat: 45 },
+    { name: "Vegetable Stir Fry", calories: 250, carbs: 40, protein: 8, fat: 10 },
+    { name: "Chicken Tikka Masala", calories: 650, carbs: 45, protein: 40, fat: 35 },
+    { name: "Beef Wellington", calories: 900, carbs: 30, protein: 50, fat: 60 },
+    { name: "Lasagna Bolognese", calories: 750, carbs: 70, protein: 35, fat: 35 },
+    { name: "Vegan Buddha Bowl", calories: 400, carbs: 50, protein: 15, fat: 12 },
+    { name: "Pasta Primavera", calories: 400, carbs: 60, protein: 15, fat: 10 },
+    { name: "Fried Rice", calories: 450, carbs: 60, protein: 10, fat: 15 },
+    { name: "Grilled Veggie Skewers", calories: 250, carbs: 35, protein: 8, fat: 10 },
+    { name: "Chicken Korma", calories: 650, carbs: 45, protein: 30, fat: 35 },
+    { name: "Lamb Curry", calories: 700, carbs: 35, protein: 40, fat: 40 },
+    { name: "Chicken Fried Rice", calories: 600, carbs: 80, protein: 30, fat: 18 },
+    { name: "Vegetable Samosas", calories: 350, carbs: 40, protein: 10, fat: 18 },
+    { name: "Pork Belly", calories: 800, carbs: 5, protein: 40, fat: 70 },
+    { name: "Grilled Shrimp", calories: 300, carbs: 5, protein: 25, fat: 18 },
+    { name: "Chicken Wings", calories: 500, carbs: 10, protein: 35, fat: 35 },
+    { name: "Bangers and Mash", calories: 600, carbs: 70, protein: 25, fat: 30 },
+    { name: "Fried Chicken", calories: 700, carbs: 25, protein: 40, fat: 40 },
+    { name: "Steak and Eggs", calories: 800, carbs: 0, protein: 60, fat: 55 },
+    { name: "Tofu Stir Fry", calories: 350, carbs: 45, protein: 20, fat: 15 },
+    { name: "Egg Salad", calories: 300, carbs: 10, protein: 20, fat: 20 },
+    { name: "Vegetable Paella", calories: 400, carbs: 60, protein: 10, fat: 15 },
+    { name: "Grilled Cheese", calories: 500, carbs: 45, protein: 15, fat: 30 },
+    { name: "Zucchini Noodles", calories: 200, carbs: 20, protein: 8, fat: 7 },
+    { name: "Beef Stir Fry", calories: 600, carbs: 40, protein: 40, fat: 25 },
+    { name: "Chana Masala", calories: 350, carbs: 50, protein: 15, fat: 8 },
+    { name: "Shrimp and Grits", calories: 450, carbs: 40, protein: 25, fat: 25 },
+    { name: "Eggplant Stir Fry", calories: 300, carbs: 40, protein: 8, fat: 15 },
+    { name: "Moussaka (Vegan)", calories: 450, carbs: 50, protein: 15, fat: 20 },
+    { name: "Sushi Rolls", calories: 500, carbs: 80, protein: 20, fat: 10 },
+    { name: "Beef Tacos", calories: 350, carbs: 35, protein: 25, fat: 18 },
+    { name: "Vegetarian Chili", calories: 400, carbs: 55, protein: 15, fat: 12 },
+    { name: "Chicken Fajitas", calories: 600, carbs: 40, protein: 45, fat: 20 },
+    { name: "Salmon Burger", calories: 500, carbs: 20, protein: 30, fat: 30 },
+    { name: "Spaghetti Aglio e Olio", calories: 400, carbs: 60, protein: 12, fat: 15 },
+    { name: "Grilled Pork Chops", calories: 600, carbs: 0, protein: 50, fat: 35 },
+    { name: "BBQ Chicken", calories: 500, carbs: 30, protein: 40, fat: 25 },
+    { name: "Sweet Potato Fries", calories: 200, carbs: 40, protein: 3, fat: 7 },
+    { name: "Ratatouille", calories: 350, carbs: 40, protein: 12, fat: 10 },
+    { name: "Fish and Chips", calories: 700, carbs: 80, protein: 30, fat: 35 },
+    { name: "Peking Duck Pancakes", calories: 800, carbs: 50, protein: 40, fat: 45 },
+    { name: "Shrimp Ceviche", calories: 250, carbs: 20, protein: 25, fat: 12 },
+    { name: "Pumpkin Soup", calories: 200, carbs: 30, protein: 6, fat: 7 },
+    { name: "Chickpea Curry", calories: 400, carbs: 50, protein: 20, fat: 15 },
+    { name: "Ceviche", calories: 180, carbs: 10, protein: 20, fat: 5 },
+    { name: "Barbecue Ribs", calories: 700, carbs: 40, protein: 60, fat: 40 },
+    { name: "Lamb Kebab", calories: 550, carbs: 10, protein: 40, fat: 35 },
+    { name: "Stuffed Bell Peppers", calories: 300, carbs: 50, protein: 15, fat: 10 },
+    { name: "Shakshuka", calories: 400, carbs: 20, protein: 25, fat: 25 },
+    { name: "Tom Yum Soup", calories: 200, carbs: 30, protein: 10, fat: 5 },
+    { name: "Tomato Basil Soup", calories: 150, carbs: 30, protein: 5, fat: 5 },
+    { name: "Lentil Soup", calories: 300, carbs: 45, protein: 15, fat: 7 }
+];
+
+    // Pagination variables
+    let currentPage = 1;
+    const itemsPerPage = 6;
+
+    // Function to generate the HTML for each food card
+    function generateCard(food) {
+        return `
+            <div class="card">
+                <h3>${food.name}</h3>
+                <p><strong>Calories:</strong> ${food.calories} kcal</p>
+                <p><strong>Carbs:</strong> ${food.carbs} g</p>
+                <p><strong>Protein:</strong> ${food.protein} g</p>
+                <p><strong>Fat:</strong> ${food.fat} g</p>
+            </div>
+        `;
+    }
+
+    // Function to display the foods
+    function displayFoods(pageFoods) {
+        const foodList = document.getElementById('food-list');
+        foodList.innerHTML = pageFoods.map(generateCard).join('');
+    }
+
+    // Function to filter the foods based on search and sorting criteria
+    function filterFoods() {
+        // Get the values of the search inputs and sorting option
+        const caloriesSearch = parseInt(document.getElementById('calories-search').value) || 0;
+        const carbsSearch = parseInt(document.getElementById('carbs-search').value) || 0;
+        const proteinSearch = parseInt(document.getElementById('protein-search').value) || 0;
+        const fatSearch = parseInt(document.getElementById('fat-search').value) || 0;
+        const sortBy = document.getElementById('sort-by').value;
+
+        // Filter the foods based on the input values
+        let filteredFoods = foodDatabase.filter(food =>
+            food.calories >= caloriesSearch &&
+            food.carbs >= carbsSearch &&
+            food.protein >= proteinSearch &&
+            food.fat >= fatSearch
+        );
+
+        // Sort the foods by the selected criteria (e.g., calories, carbs, etc.)
+        filteredFoods.sort((a, b) => a[sortBy] - b[sortBy]);
+
+        // Calculate total pages based on filtered food count
+        const totalPages = Math.ceil(filteredFoods.length / itemsPerPage);
+
+        // Enable/disable pagination buttons based on the current page
+        document.getElementById('prev-btn').disabled = currentPage === 1;
+        document.getElementById('next-btn').disabled = currentPage === totalPages;
+
+        // Slice the filtered foods to show only the items for the current page
+        const pageFoods = filteredFoods.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+        // Display the foods for the current page
+        displayFoods(pageFoods);
+    }
+
+    // Function to change the page when the "Next" or "Previous" buttons are clicked
+    function changePage(direction) {
+        currentPage += direction;
+        filterFoods();  // Refresh the displayed foods based on the new page
+    }
+
+    // Event listeners to trigger filterFoods whenever the user types in the search boxes or changes the sort option
+    document.getElementById('calories-search').addEventListener('input', filterFoods);
+    document.getElementById('carbs-search').addEventListener('input', filterFoods);
+    document.getElementById('protein-search').addEventListener('input', filterFoods);
+    document.getElementById('fat-search').addEventListener('input', filterFoods);
+    document.getElementById('sort-by').addEventListener('change', filterFoods);
+
+    // Initialize by displaying the filtered foods when the page loads
+    filterFoods();
+</script>
+
+</body>
+</html>

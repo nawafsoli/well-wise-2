@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calorie & Protein Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            /* background-color: #f2f2f2; */
+            background: linear-gradient(to bottom right, #e0f7fa, #fce4ec);
+        }
+        .calculator {
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        h2 {
+        text-align: center;
+        color: #00ACC1;
+        margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .note {
+            margin: 20px 0;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+        .note span{
+            color: #FF4081;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            /* background: #007bff; */
+            background-color: #00ACC1;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            flex: 1;
+        }
+        button:hover {
+            /* background: #0056b3; */
+            background-color: #0097A7;
+        }
+        .back-button {
+            background: #6c757d;
+        }
+        .back-button:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <h2>Calorie & Protein Calculator</h2>
+    <div class="input-group">
+        <label for="gender">Gender:</label>
+        <select id="gender" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <label for="age">Age (years):</label>
+        <input type="number" id="age" min="1" required>
+    </div>
+    <div class="input-group">
+        <label for="height">Height (cm):</label>
+        <input type="number" id="height" min="1" required>
+    </div>
+    <div class="input-group">
+        <label for="weight">Weight (kg):</label>
+        <input type="number" id="weight" min="1" required>
+    </div>
+    <div class="input-group">
+        <label for="activity">Activity Level:</label>
+        <select id="activity" required>
+            <option value="1.2">Sedentary (little or no exercise)</option>
+            <option value="1.375">Lightly active (light exercise 1-3 days/week)</option>
+            <option value="1.55">Moderately active (moderate exercise 3-5 days/week)</option>
+            <option value="1.725">Very active (hard exercise 6-7 days/week)</option>
+            <option value="1.9">Extra active (very intense exercise or physical job)</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <label for="goal">Weight Goal:</label>
+        <select id="goal" required>
+            <option value="maintain">Maintain weight</option>
+            <option value="lose">Lose weight</option>
+            <option value="gain">Gain weight</option>
+        </select>
+    </div>
+
+    <!-- Note paragraph -->
+    <p class="note">
+        <span>Note:</span> actual needs may vary based on individual factors such as metabolism, muscle mass, and overall health status. This is just an estimation.
+    </p>
+
+    <div class="button-group">
+        <button onclick="calculate()">Calculate</button>
+        <button class="back-button" onclick="history.back()">Go Back</button>
+    </div>
+    
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+function calculate() {
+    const gender = document.getElementById('gender').value;
+    const age = parseFloat(document.getElementById('age').value);
+    const height = parseFloat(document.getElementById('height').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    const activityMultiplier = parseFloat(document.getElementById('activity').value);
+    const goal = document.getElementById('goal').value;
+
+    if (!age || !height || !weight || age <= 0 || height <= 0 || weight <= 0) {
+        alert("Please enter valid values for all fields.");
+        return;
+    }
+
+    // Mifflin-St Jeor Equation for BMR
+    let bmr;
+    if (gender === 'male') {
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+    } else {
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+    }
+
+    // Adjust daily calorie needs based on activity level
+    let dailyCalories = bmr * activityMultiplier;
+
+    // Adjust calorie intake based on goal
+    if (goal === "lose") {
+        dailyCalories -= 500; // reduce 500 calories for weight loss
+    } else if (goal === "gain") {
+        dailyCalories += 500; // add 500 calories for weight gain
+    }
+
+    // Daily protein needs (recommended 1.6 - 2.2 g/kg of body weight)
+    const dailyProtein = weight * 1.8; // Average protein need
+
+    // Display results
+    document.getElementById('result').innerHTML = `
+        <p><strong>Daily Calorie Needs:</strong> ${Math.round(dailyCalories)} kcal</p>
+        <p><strong>Daily Protein Needs:</strong> ${Math.round(dailyProtein)} g</p>
+    `;
+}
+</script>
+
+</body>
+</html>

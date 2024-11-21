@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom right, #e0f7fa, #fce4ec);
+        }
+        .signup {
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        h2 {
+            color: #00ACC1;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .note {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+        .note a {
+            /* color: #FF4081;
+            text-decoration: none; */
+
+            color: #FF4081;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .note a:hover {
+            /* text-decoration: underline; */
+
+            color: #F06292;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #00ACC1;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0097A7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="signup">
+    <h2>Sign Up</h2>
+    <div class="input-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" required>
+    </div>
+    <div class="input-group">
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" required>
+    </div>
+    <div class="input-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+    </div>
+
+    <button onclick="signUp()">Sign Up</button>
+    
+    <p class="note">
+        Already have an account? <a href="login.html">Log In</a>
+    </p>
+</div>
+
+<script>
+function signUp() {
+    const username = document.getElementById('username').value;
+    const phone = document.getElementById('phone').value;
+    const password = document.getElementById('password').value;
+
+    if (username && phone && password) {
+        alert("Sign up successful!");
+    } else {
+        alert("Please fill in all fields.");
+    }
+}
+</script>
+
+</body>
+</html>
